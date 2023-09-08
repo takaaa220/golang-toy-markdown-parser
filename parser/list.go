@@ -17,7 +17,26 @@ func (l *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 			break
 		}
 
-		isListItem, indent, listText := decomposeLine(l.peek(), func(line string) (bool, string) {
+		line, indent := removeIndent(l.peek())
+		if indent < currentIndent {
+			break
+		}
+		if indent > currentIndent {
+			if beforeListItem == nil {
+				return ast.Node{}, ParseError{Message: "invalid unordered list", Line: l.lineCursor, From: 0, To: 1}
+			}
+
+			children, err := l.Parse(indent)
+			if err != nil {
+				return ast.Node{}, err
+			}
+
+			beforeListItem.Children = append(beforeListItem.Children, children...)
+
+			continue
+		}
+
+		listText, isListItem := getListItemText(line, func(line string) (bool, string) {
 			if usingSymbol != "" {
 				prefix := fmt.Sprintf("%s ", usingSymbol)
 				if strings.HasPrefix(line, prefix) {
@@ -39,22 +58,8 @@ func (l *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 
 			return false, ""
 		})
-		if !isListItem || indent < currentIndent {
+		if !isListItem {
 			break
-		}
-
-		if indent > currentIndent {
-			if beforeListItem == nil {
-				return ast.Node{}, ParseError{Message: "invalid unordered list", Line: l.lineCursor, From: 0, To: 1}
-			}
-
-			items, err := l.unorderedList(indent)
-			if err != nil {
-				return ast.Node{}, err
-			}
-
-			beforeListItem.Children = append(beforeListItem.Children, items)
-			continue
 		}
 
 		if beforeListItem != nil {
@@ -63,7 +68,6 @@ func (l *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 
 		listItem := ast.ListItemNode(ast.TextNode(listText))
 		beforeListItem = &listItem
-
 		l.next()
 	}
 
@@ -87,7 +91,26 @@ func (l *Parser) orderedList(currentIndent int) (ast.Node, error) {
 			break
 		}
 
-		isListItem, indent, listText := decomposeLine(l.peek(), func(line string) (bool, string) {
+		line, indent := removeIndent(l.peek())
+		if indent < currentIndent {
+			break
+		}
+		if indent > currentIndent {
+			if beforeListItem == nil {
+				return ast.Node{}, ParseError{Message: "invalid ordered list", Line: l.lineCursor, From: 0, To: 1}
+			}
+
+			children, err := l.Parse(indent)
+			if err != nil {
+				return ast.Node{}, err
+			}
+
+			beforeListItem.Children = append(beforeListItem.Children, children...)
+
+			continue
+		}
+
+		listText, isListItem := getListItemText(line, func(line string) (bool, string) {
 			num := len(listItems) + 1
 			if beforeListItem != nil {
 				num++
@@ -100,22 +123,8 @@ func (l *Parser) orderedList(currentIndent int) (ast.Node, error) {
 
 			return false, ""
 		})
-		if !isListItem || indent < currentIndent {
+		if !isListItem {
 			break
-		}
-
-		if indent > currentIndent {
-			if beforeListItem == nil {
-				return ast.Node{}, ParseError{Message: "invalid ordered list", Line: l.lineCursor, From: 0, To: 1}
-			}
-
-			items, err := l.orderedList(indent)
-			if err != nil {
-				return ast.Node{}, err
-			}
-
-			beforeListItem.Children = append(beforeListItem.Children, items)
-			continue
 		}
 
 		if beforeListItem != nil {
@@ -124,7 +133,6 @@ func (l *Parser) orderedList(currentIndent int) (ast.Node, error) {
 
 		listItem := ast.ListItemNode(ast.TextNode(listText))
 		beforeListItem = &listItem
-
 		l.next()
 	}
 
@@ -139,27 +147,10 @@ func (l *Parser) orderedList(currentIndent int) (ast.Node, error) {
 	return ast.OrderedListNode(listItems...), nil
 }
 
-func decomposeLine(line string, checkSymbol func(string) (bool, string)) (bool, int, string) {
-	indent := getIndent(line)
-	line = line[indent:]
-
+func getListItemText(line string, checkSymbol func(string) (bool, string)) (string, bool) {
 	if isValid, symbolRemovedLine := checkSymbol(line); isValid {
-		return true, indent, symbolRemovedLine
+		return symbolRemovedLine, true
 	}
 
-	return false, 0, ""
-}
-
-func getIndent(line string) int {
-	indent := 0
-	for _, c := range line {
-		switch c {
-		case ' ', '\t':
-			indent++
-		default:
-			return indent
-		}
-	}
-
-	return indent
+	return "", false
 }

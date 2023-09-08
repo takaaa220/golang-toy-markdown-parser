@@ -27,17 +27,21 @@ func NewParser(input string) *Parser {
 	return &Parser{lines: strings.Split(input, "\n"), lineCursor: -1}
 }
 
-func (l *Parser) Lex() ([]ast.Node, error) {
+func (l *Parser) Parse(currentIndent int) ([]ast.Node, error) {
 	nodes := []ast.Node{}
 
 	for l.hasNext() {
-		node, err := l.block(0)
+		indent := getIndent(l.peek())
+		if indent < currentIndent {
+			break
+		}
+
+		node, err := l.block(indent)
 		if err != nil {
 			return nil, err
 		}
 
 		nodes = append(nodes, node)
-		l.lineCursor++
 	}
 
 	return nodes, nil
@@ -53,10 +57,20 @@ func (p *Parser) peek() string {
 	return line
 }
 
-func (l *Parser) next() {
-	l.lineCursor += 1
+func (l *Parser) next() string {
+	if !l.hasNext() {
+		panic("no next line")
+	}
+
+	l.lineCursor++
+	return l.lines[l.lineCursor]
 }
 
-func (p *Parser) back() {
-	p.lineCursor -= 1
+func (p *Parser) back() string {
+	if p.lineCursor == -1 {
+		panic("no previous line")
+	}
+
+	p.lineCursor--
+	return p.lines[p.lineCursor]
 }

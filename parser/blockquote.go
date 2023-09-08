@@ -6,18 +6,20 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (l *Parser) blockquote() (ast.Node, error) {
+func (l *Parser) blockquote(currentIndent int) (ast.Node, error) {
 	lines := []string{}
 
 	for {
-		line := l.lines[l.lineCursor]
+		if !l.hasNext() {
+			break
+		}
+		line := l.peek()[currentIndent:]
 		if line[0] != '>' {
-			l.lineCursor--
 			break
 		}
 
 		lines = append(lines, strings.TrimLeft(line[1:], " "))
-		l.lineCursor++
+		l.next()
 	}
 
 	if len(lines) == 0 {
