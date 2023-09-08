@@ -41,6 +41,10 @@ func (l *Parser) Parse(currentIndent int) ([]ast.Node, error) {
 			return nil, err
 		}
 
+		if node.Type == ast.Empty {
+			continue
+		}
+
 		nodes = append(nodes, node)
 	}
 
@@ -64,13 +68,4 @@ func (l *Parser) next() string {
 
 	l.lineCursor++
 	return l.lines[l.lineCursor]
-}
-
-func (p *Parser) back() string {
-	if p.lineCursor == -1 {
-		panic("no previous line")
-	}
-
-	p.lineCursor--
-	return p.lines[p.lineCursor]
 }

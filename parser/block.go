@@ -9,9 +9,6 @@ import (
 
 func (l *Parser) block(currentIndent int) (ast.Node, error) {
 	line := l.peek()[currentIndent:]
-	if line == "" {
-		return ast.EmptyNode(), nil
-	}
 
 	switch {
 	case line[0] == '#':
@@ -27,6 +24,6 @@ func (l *Parser) block(currentIndent int) (ast.Node, error) {
 	// case line[0] == '|':
 	// 	return table()
 	default:
-		return l.paragraph()
+		return l.paragraph(currentIndent)
 	}
 }
