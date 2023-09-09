@@ -6,14 +6,14 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (l *Parser) blockquote(currentIndent int) (ast.Node, error) {
+func (p *Parser) blockquote(currentIndent int) (ast.Node, error) {
 	children := []ast.Node{}
 
 	for {
-		if !l.hasNext() {
+		if !p.hasNext() {
 			break
 		}
-		line := l.peek()[currentIndent:]
+		line := p.peek()[currentIndent:]
 		if line[0] != '>' {
 			break
 		}
@@ -24,11 +24,11 @@ func (l *Parser) blockquote(currentIndent int) (ast.Node, error) {
 		}
 
 		children = append(children, inlineChildren...)
-		l.next()
+		p.next()
 	}
 
 	if len(children) == 0 {
-		return ast.Node{}, ParseError{Message: "invalid blockquote", Line: l.lineCursor, From: 0, To: 0}
+		return ast.Node{}, ParseError{Message: "invalid blockquote", Line: p.lineCursor, From: 0, To: 0}
 	}
 
 	return ast.BlockQuoteNode(children...), nil

@@ -7,23 +7,23 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (l *Parser) block(currentIndent int) (ast.Node, error) {
-	line := l.peek()[currentIndent:]
+func (p *Parser) block(currentIndent int) (ast.Node, error) {
+	line := p.peek()[currentIndent:]
 
 	switch {
 	case line[0] == '#':
-		return l.heading(currentIndent)
+		return p.heading(currentIndent)
 	case line[0] == '>':
-		return l.blockquote(currentIndent)
+		return p.blockquote(currentIndent)
 	case strings.HasPrefix(line, "```"):
-		return l.codeblock(currentIndent)
+		return p.codeblock(currentIndent)
 	case line[0] == '-' || line[0] == '+' || line[0] == '*':
-		return l.unorderedList(currentIndent)
+		return p.unorderedList(currentIndent)
 	case regexp.MustCompile(`^\d+\.`).MatchString(line):
-		return l.orderedList(currentIndent)
+		return p.orderedList(currentIndent)
 	// case line[0] == '|':
 	// 	return table()
 	default:
-		return l.paragraph(currentIndent)
+		return p.paragraph(currentIndent)
 	}
 }

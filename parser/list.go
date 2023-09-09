@@ -7,26 +7,26 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (l *Parser) unorderedList(currentIndent int) (ast.Node, error) {
+func (p *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 	listItems := []ast.Node{}
 	var usingSymbol string
 	var beforeListItem *ast.Node
 
 	for {
-		if !l.hasNext() {
+		if !p.hasNext() {
 			break
 		}
 
-		line, indent := removeIndent(l.peek())
+		line, indent := removeIndent(p.peek())
 		if indent < currentIndent {
 			break
 		}
 		if indent > currentIndent {
 			if beforeListItem == nil {
-				return ast.Node{}, ParseError{Message: "invalid unordered list", Line: l.lineCursor, From: 0, To: 1}
+				return ast.Node{}, ParseError{Message: "invalid unordered list", Line: p.lineCursor, From: 0, To: 1}
 			}
 
-			children, err := l.Parse(indent)
+			children, err := p.Parse(indent)
 			if err != nil {
 				return ast.Node{}, err
 			}
@@ -73,7 +73,7 @@ func (l *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 
 		listItem := ast.ListItemNode(listItemChildren...)
 		beforeListItem = &listItem
-		l.next()
+		p.next()
 	}
 
 	if beforeListItem != nil {
@@ -81,31 +81,31 @@ func (l *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 	}
 
 	if len(listItems) == 0 {
-		return ast.Node{}, ParseError{Message: "invalid unordered list", Line: l.lineCursor, From: 0, To: 1}
+		return ast.Node{}, ParseError{Message: "invalid unordered list", Line: p.lineCursor, From: 0, To: 1}
 	}
 
 	return ast.UnorderedListNode(listItems...), nil
 }
 
-func (l *Parser) orderedList(currentIndent int) (ast.Node, error) {
+func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
 	listItems := []ast.Node{}
 	var beforeListItem *ast.Node
 
 	for {
-		if !l.hasNext() {
+		if !p.hasNext() {
 			break
 		}
 
-		line, indent := removeIndent(l.peek())
+		line, indent := removeIndent(p.peek())
 		if indent < currentIndent {
 			break
 		}
 		if indent > currentIndent {
 			if beforeListItem == nil {
-				return ast.Node{}, ParseError{Message: "invalid ordered list", Line: l.lineCursor, From: 0, To: 1}
+				return ast.Node{}, ParseError{Message: "invalid ordered list", Line: p.lineCursor, From: 0, To: 1}
 			}
 
-			children, err := l.Parse(indent)
+			children, err := p.Parse(indent)
 			if err != nil {
 				return ast.Node{}, err
 			}
@@ -143,7 +143,7 @@ func (l *Parser) orderedList(currentIndent int) (ast.Node, error) {
 
 		listItem := ast.ListItemNode(listItemChildren...)
 		beforeListItem = &listItem
-		l.next()
+		p.next()
 	}
 
 	if beforeListItem != nil {
@@ -151,7 +151,7 @@ func (l *Parser) orderedList(currentIndent int) (ast.Node, error) {
 	}
 
 	if len(listItems) == 0 {
-		return ast.Node{}, ParseError{Message: "invalid ordered list", Line: l.lineCursor, From: 0, To: 1}
+		return ast.Node{}, ParseError{Message: "invalid ordered list", Line: p.lineCursor, From: 0, To: 1}
 	}
 
 	return ast.OrderedListNode(listItems...), nil
