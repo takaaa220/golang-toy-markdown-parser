@@ -94,7 +94,7 @@ func TestParser_block(t *testing.T) {
 			},
 			want: ast.CodeBlockNode([]string{
 				`fmt.Print("hello")`,
-			}),
+			}, "go"),
 		},
 		{
 			name: "test6",

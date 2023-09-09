@@ -1,9 +1,6 @@
 package parser
 
 import (
-	"regexp"
-	"strings"
-
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
@@ -11,15 +8,15 @@ func (p *Parser) block(currentIndent int) (ast.Node, error) {
 	line := p.peek()[currentIndent:]
 
 	switch {
-	case line[0] == '#':
+	case isHeading(line):
 		return p.heading(currentIndent)
-	case line[0] == '>':
+	case isBlockquote(line):
 		return p.blockquote(currentIndent)
-	case strings.HasPrefix(line, "```"):
+	case isCodeblock(line):
 		return p.codeblock(currentIndent)
-	case line[0] == '-' || line[0] == '+' || line[0] == '*':
+	case isUnorderedList(line):
 		return p.unorderedList(currentIndent)
-	case regexp.MustCompile(`^\d+\.`).MatchString(line):
+	case isOrderedList(line):
 		return p.orderedList(currentIndent)
 	// case line[0] == '|':
 	// 	return table()

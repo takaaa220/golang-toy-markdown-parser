@@ -13,10 +13,3 @@ func getIndent(line string) int {
 
 	return indent
 }
-
-func removeIndent(line string) (string, int) {
-	indent := getIndent(line)
-	line = line[indent:]
-
-	return line, indent
-}

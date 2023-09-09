@@ -11,7 +11,8 @@ func (p *Parser) codeblock(currentIndent int) (ast.Node, error) {
 	if !strings.HasPrefix(firstLine, "```") {
 		return ast.Node{}, ParseError{Message: "invalid codeblock", Line: p.lineCursor, From: 0, To: len(firstLine)}
 	}
-	// TODO: support language
+
+	language := strings.Trim(firstLine[3:], " ")
 
 	lines := []string{}
 	for {
@@ -27,5 +28,9 @@ func (p *Parser) codeblock(currentIndent int) (ast.Node, error) {
 		lines = append(lines, line)
 	}
 
-	return ast.CodeBlockNode(lines), nil
+	return ast.CodeBlockNode(lines, language), nil
+}
+
+func isCodeblock(line string) bool {
+	return strings.HasPrefix(line, "```")
 }

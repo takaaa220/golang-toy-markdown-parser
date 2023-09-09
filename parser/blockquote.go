@@ -33,3 +33,7 @@ func (p *Parser) blockquote(currentIndent int) (ast.Node, error) {
 
 	return ast.BlockQuoteNode(children...), nil
 }
+
+func isBlockquote(line string) bool {
+	return strings.HasPrefix(line, "> ")
+}

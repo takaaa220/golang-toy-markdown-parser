@@ -33,37 +33,39 @@ const (
 	Escape        NodeType = "Escape"
 )
 
-type Node struct {
-	Type     NodeType
-	Text     string
-	Level    int
-	Href     string
-	Alt      string
-	Src      string
-	Raw      string
-	Children []Node
+type HeadingAttribute struct {
+	Level int
 }
 
-// for debug
-// func inner(n Node, indent int) string {
-// 	indentStr := strings.Repeat(" ", indent)
-// 	if len(n.Children) == 0 {
-// 		return indentStr + string(n.Type) + " " + n.Text
-// 	}
+type TableAttribute struct{}
 
-// 	children := []string{}
-// 	for _, child := range n.Children {
-// 		children = append(children, inner(child, indent+2))
-// 	}
-// 	return indentStr + string(n.Type) + " " + n.Text + "\n" + strings.Join(children, "\n")
-// }
+type LinkAttribute struct {
+	Href string
+}
 
-// func (n Node) String() string {
-// 	return inner(n, 0)
-// }
+type ImageAttribute struct {
+	Alt string
+	Src string
+}
+
+type CodeBlockAttribute struct {
+	Language string
+}
+
+type Node struct {
+	Type      NodeType
+	Text      string
+	Children  []Node
+	Attribute interface{}
+	// Raw       string
+}
 
 func HeadingNode(level int, children ...Node) Node {
-	return Node{Type: Heading, Level: level, Children: children}
+	return Node{
+		Type:      Heading,
+		Children:  children,
+		Attribute: HeadingAttribute{Level: level},
+	}
 }
 
 func ParagraphNode(children ...Node) Node {
@@ -85,16 +87,17 @@ func ListItemNode(children ...Node) Node {
 	}
 }
 
-func TableNode() Node {
-	return Node{Type: Table}
+func TableNode(attribute TableAttribute) Node {
+	return Node{Type: Table, Attribute: attribute}
 }
 
-func CodeBlockNode(lines []string) Node {
+func CodeBlockNode(lines []string, language string) Node {
 	return Node{
 		Type: CodeBlock,
 		Children: []Node{
 			TextNode(strings.Join(lines, "\n")),
 		},
+		Attribute: CodeBlockAttribute{Language: language},
 	}
 }
 
@@ -134,11 +137,18 @@ func StrikeThroughNode(children ...Node) Node {
 }
 
 func ImageNode(alt string, src string) Node {
-	return Node{Type: Image, Alt: alt, Src: src}
+	return Node{
+		Type:      Image,
+		Attribute: ImageAttribute{Alt: alt, Src: src},
+	}
 }
 
 func LinkNode(href string, children ...Node) Node {
-	return Node{Type: Link, Href: href, Children: children}
+	return Node{
+		Type:      Link,
+		Children:  children,
+		Attribute: LinkAttribute{Href: href},
+	}
 }
 
 func NewLineNode() Node {

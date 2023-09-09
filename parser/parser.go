@@ -56,9 +56,11 @@ func (p *Parser) hasNext() bool {
 }
 
 func (p *Parser) peek() string {
-	line := p.lines[p.lineCursor+1]
+	if !p.hasNext() {
+		panic("no next line")
+	}
 
-	return line
+	return p.lines[p.lineCursor+1]
 }
 
 func (p *Parser) next() string {
