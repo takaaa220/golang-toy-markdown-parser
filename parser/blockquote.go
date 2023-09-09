@@ -13,8 +13,8 @@ func (p *Parser) blockquote(currentIndent int) (ast.Node, error) {
 		if !p.hasNext() {
 			break
 		}
-		line := p.peek()[currentIndent:]
-		if line[0] != '>' {
+		line := p.peek().getText(currentIndent)
+		if !isBlockQuote(line) {
 			break
 		}
 
@@ -34,6 +34,6 @@ func (p *Parser) blockquote(currentIndent int) (ast.Node, error) {
 	return ast.BlockQuoteNode(children...), nil
 }
 
-func isBlockquote(line string) bool {
+func isBlockQuote(line string) bool {
 	return strings.HasPrefix(line, "> ")
 }

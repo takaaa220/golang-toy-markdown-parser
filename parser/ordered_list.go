@@ -17,8 +17,7 @@ func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
 		}
 
 		line := p.peek()
-		indent := getIndent(line)
-		line = line[indent:]
+		indent := line.getIndent()
 		if indent < currentIndent {
 			break
 		}
@@ -42,7 +41,7 @@ func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
 			currentListItemNumber++
 		}
 
-		listText, isListItem := getOrderedListItemText(line, currentListItemNumber)
+		listText, isListItem := getOrderedListItemText(line.getText(indent), currentListItemNumber)
 		if !isListItem {
 			break
 		}

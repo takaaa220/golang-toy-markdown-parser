@@ -5,12 +5,12 @@ import (
 )
 
 func (p *Parser) block(currentIndent int) (ast.Node, error) {
-	line := p.peek()[currentIndent:]
+	line := p.peek().getText(currentIndent)
 
 	switch {
 	case isHeading(line):
 		return p.heading(currentIndent)
-	case isBlockquote(line):
+	case isBlockQuote(line):
 		return p.blockquote(currentIndent)
 	case isCodeblock(line):
 		return p.codeblock(currentIndent)

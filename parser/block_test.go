@@ -110,8 +110,13 @@ func TestParser_block(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			lines := []Line{}
+			for _, line := range tt.fields.lines {
+				lines = append(lines, Line{line})
+			}
+
 			l := &Parser{
-				lines:      tt.fields.lines,
+				lines:      lines,
 				lineCursor: tt.fields.lineCursor,
 			}
 			got, err := l.block(tt.currentIndent)

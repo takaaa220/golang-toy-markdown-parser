@@ -8,7 +8,7 @@ import (
 )
 
 func (p *Parser) heading(currentIndent int) (ast.Node, error) {
-	line := p.next()[currentIndent:]
+	line := p.next().getText(currentIndent)
 
 	level := 0
 	for line[level] == '#' {

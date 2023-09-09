@@ -18,8 +18,7 @@ func (p *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 		}
 
 		line := p.peek()
-		indent := getIndent(line)
-		line = line[indent:]
+		indent := line.getIndent()
 		if indent < currentIndent {
 			break
 		}
@@ -38,7 +37,7 @@ func (p *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 			continue
 		}
 
-		listText, symbol, isListItem := getUnorderedListItemText(line, usingSymbol)
+		listText, symbol, isListItem := getUnorderedListItemText(line.getText(indent), usingSymbol)
 		if !isListItem {
 			break
 		}

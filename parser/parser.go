@@ -7,6 +7,32 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
+type Line struct {
+	text string
+}
+
+func (l Line) getIndent() int {
+	indent := 0
+	for _, c := range l.text {
+		switch c {
+		case ' ', '\t':
+			indent++
+		default:
+			return indent
+		}
+	}
+
+	return indent
+}
+
+func (l Line) getText(indent int) string {
+	if l.getIndent() < indent {
+		panic("invalid indent")
+	}
+
+	return l.text[indent:]
+}
+
 type ParseError struct {
 	Message string
 	Line    int
@@ -19,19 +45,24 @@ func (e ParseError) Error() string {
 }
 
 type Parser struct {
-	lines      []string
+	lines      []Line
 	lineCursor int
 }
 
 func NewParser(input string) *Parser {
-	return &Parser{lines: strings.Split(input, "\n"), lineCursor: -1}
+	lines := []Line{}
+	for _, line := range strings.Split(input, "\n") {
+		lines = append(lines, Line{text: line})
+	}
+
+	return &Parser{lines: lines, lineCursor: -1}
 }
 
 func (p *Parser) Parse(currentIndent int) ([]ast.Node, error) {
 	nodes := []ast.Node{}
 
 	for p.hasNext() {
-		indent := getIndent(p.peek())
+		indent := p.peek().getIndent()
 		if indent < currentIndent {
 			break
 		}
@@ -55,7 +86,7 @@ func (p *Parser) hasNext() bool {
 	return p.lineCursor < len(p.lines)-1
 }
 
-func (p *Parser) peek() string {
+func (p *Parser) peek() Line {
 	if !p.hasNext() {
 		panic("no next line")
 	}
@@ -63,7 +94,7 @@ func (p *Parser) peek() string {
 	return p.lines[p.lineCursor+1]
 }
 
-func (p *Parser) next() string {
+func (p *Parser) next() Line {
 	if !p.hasNext() {
 		panic("no next line")
 	}

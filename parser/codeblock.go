@@ -7,7 +7,7 @@ import (
 )
 
 func (p *Parser) codeblock(currentIndent int) (ast.Node, error) {
-	firstLine := p.next()[currentIndent:]
+	firstLine := p.next().getText(currentIndent)
 	if !strings.HasPrefix(firstLine, "```") {
 		return ast.Node{}, ParseError{Message: "invalid codeblock", Line: p.lineCursor, From: 0, To: len(firstLine)}
 	}
@@ -20,8 +20,8 @@ func (p *Parser) codeblock(currentIndent int) (ast.Node, error) {
 			break
 		}
 
-		line := p.next()[currentIndent:]
-		if strings.HasPrefix(line, "```") {
+		line := p.next().getText(currentIndent)
+		if isCodeblock(line) {
 			break
 		}
 
