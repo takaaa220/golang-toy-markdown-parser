@@ -7,7 +7,7 @@ import (
 )
 
 func (l *Parser) blockquote(currentIndent int) (ast.Node, error) {
-	lines := []string{}
+	children := []ast.Node{}
 
 	for {
 		if !l.hasNext() {
@@ -18,13 +18,18 @@ func (l *Parser) blockquote(currentIndent int) (ast.Node, error) {
 			break
 		}
 
-		lines = append(lines, strings.TrimLeft(line[1:], " "))
+		inlineChildren, err := inline(strings.TrimLeft(line[1:], " "))
+		if err != nil {
+			return ast.Node{}, err
+		}
+
+		children = append(children, inlineChildren...)
 		l.next()
 	}
 
-	if len(lines) == 0 {
-		return ast.Node{}, ParseError{Message: "invalid blockquote", Line: l.lineCursor, From: 0, To: len(lines[l.lineCursor])}
+	if len(children) == 0 {
+		return ast.Node{}, ParseError{Message: "invalid blockquote", Line: l.lineCursor, From: 0, To: 0}
 	}
 
-	return ast.BlockQuoteNode(lines), nil
+	return ast.BlockQuoteNode(children...), nil
 }

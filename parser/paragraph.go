@@ -9,5 +9,10 @@ func (p *Parser) paragraph(currentIndent int) (ast.Node, error) {
 		return ast.EmptyNode(), nil
 	}
 
-	return ast.ParagraphNode(line), nil
+	children, err := inline(line)
+	if err != nil {
+		return ast.Node{}, err
+	}
+
+	return ast.ParagraphNode(children...), nil
 }

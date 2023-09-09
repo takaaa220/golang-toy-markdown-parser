@@ -24,7 +24,6 @@ func TestParser_unorderedList(t *testing.T) {
 				"  - list1-2-1",
 				"- list2",
 			}, "\n"),
-			currentIndent: 0,
 			want: ast.UnorderedListNode(
 				ast.ListItemNode(
 					ast.TextNode("list1"),
@@ -51,18 +50,15 @@ func TestParser_unorderedList(t *testing.T) {
 					ast.TextNode("list2"),
 				),
 			),
-			wantErr: false,
 		},
 		{
 			input: strings.Join([]string{
 				"- list1",
 				"* list2",
 			}, "\n"),
-			currentIndent: 0,
 			want: ast.UnorderedListNode(ast.ListItemNode(
 				ast.TextNode("list1"),
 			)),
-			wantErr: false,
 		},
 		{
 			input: strings.Join([]string{
@@ -76,7 +72,7 @@ func TestParser_unorderedList(t *testing.T) {
 			want: ast.UnorderedListNode(
 				ast.ListItemNode(
 					ast.TextNode("list1"),
-					ast.HeadingNode(1, "heading"),
+					ast.HeadingNode(1, ast.TextNode("heading")),
 					ast.UnorderedListNode(
 						ast.ListItemNode(
 							ast.TextNode("list1-1"),
@@ -90,7 +86,23 @@ func TestParser_unorderedList(t *testing.T) {
 					ast.TextNode("list2"),
 				),
 			),
-			wantErr: false,
+		},
+		{
+			input: strings.Join([]string{
+				"- l**is**t1",
+				"- list*2*",
+			}, "\n"),
+			want: ast.UnorderedListNode(
+				ast.ListItemNode(
+					ast.TextNode("l"),
+					ast.StrongNode(ast.TextNode("is")),
+					ast.TextNode("t1"),
+				),
+				ast.ListItemNode(
+					ast.TextNode("list"),
+					ast.ItalicNode(ast.TextNode("2")),
+				),
+			),
 		},
 	}
 

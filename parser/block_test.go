@@ -44,7 +44,7 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: -1,
 			},
-			want: ast.HeadingNode(1, "heading"),
+			want: ast.HeadingNode(1, ast.TextNode("heading")),
 		},
 		{
 			name: "test2",
@@ -52,7 +52,7 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: 0,
 			},
-			want: ast.HeadingNode(2, "heading"),
+			want: ast.HeadingNode(2, ast.TextNode("heading")),
 		},
 		{
 			name: "test3",
@@ -63,8 +63,8 @@ func TestParser_block(t *testing.T) {
 			want: ast.UnorderedListNode(
 				ast.ListItemNode(
 					ast.TextNode("hello"),
-					ast.HeadingNode(3, "heading"),
-					ast.ParagraphNode("text"),
+					ast.HeadingNode(3, ast.TextNode("heading")),
+					ast.ParagraphNode(ast.TextNode("text")),
 				),
 				ast.ListItemNode(
 					ast.TextNode("world"),
@@ -102,10 +102,10 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: 13,
 			},
-			want: ast.BlockQuoteNode([]string{
-				"blockquote1",
-				"blockquote2",
-			}),
+			want: ast.BlockQuoteNode(
+				ast.TextNode("blockquote1"),
+				ast.TextNode("blockquote2"),
+			),
 		},
 	}
 	for _, tt := range tests {

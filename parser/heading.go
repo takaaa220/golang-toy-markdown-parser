@@ -22,5 +22,10 @@ func (l *Parser) heading(currentIndent int) (ast.Node, error) {
 		return ast.Node{}, ParseError{Message: "invalid heading", Line: l.lineCursor, From: 0, To: len(line)}
 	}
 
-	return ast.HeadingNode(level, strings.TrimLeft(headingText, " ")), nil
+	children, err := inline(strings.TrimLeft(headingText, " "))
+	if err != nil {
+		return ast.Node{}, err
+	}
+
+	return ast.HeadingNode(level, children...), nil
 }

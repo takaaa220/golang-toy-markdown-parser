@@ -66,7 +66,12 @@ func (l *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 			listItems = append(listItems, *beforeListItem)
 		}
 
-		listItem := ast.ListItemNode(ast.TextNode(listText))
+		listItemChildren, err := inline(listText)
+		if err != nil {
+			return ast.Node{}, err
+		}
+
+		listItem := ast.ListItemNode(listItemChildren...)
 		beforeListItem = &listItem
 		l.next()
 	}
@@ -131,7 +136,12 @@ func (l *Parser) orderedList(currentIndent int) (ast.Node, error) {
 			listItems = append(listItems, *beforeListItem)
 		}
 
-		listItem := ast.ListItemNode(ast.TextNode(listText))
+		listItemChildren, err := inline(listText)
+		if err != nil {
+			return ast.Node{}, err
+		}
+
+		listItem := ast.ListItemNode(listItemChildren...)
 		beforeListItem = &listItem
 		l.next()
 	}

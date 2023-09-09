@@ -22,19 +22,24 @@ const (
 
 // Inline Tokens
 const (
-	Text    NodeType = "Text"
-	Strong  NodeType = "Strong"
-	Italic  NodeType = "Italic"
-	Image   NodeType = "Image"
-	Link    NodeType = "Link"
-	NewLine NodeType = "NewLine"
-	Escape  NodeType = "Escape"
+	Text          NodeType = "Text"
+	Strong        NodeType = "Strong"
+	Italic        NodeType = "Italic"
+	StrikeThrough NodeType = "StrikeThrough"
+	Code          NodeType = "Code"
+	Image         NodeType = "Image"
+	Link          NodeType = "Link"
+	NewLine       NodeType = "NewLine"
+	Escape        NodeType = "Escape"
 )
 
 type Node struct {
 	Type     NodeType
 	Text     string
 	Level    int
+	Href     string
+	Alt      string
+	Src      string
 	Raw      string
 	Children []Node
 }
@@ -57,12 +62,12 @@ type Node struct {
 // 	return inner(n, 0)
 // }
 
-func HeadingNode(level int, text string) Node {
-	return Node{Type: Heading, Level: level, Children: []Node{TextNode(text)}}
+func HeadingNode(level int, children ...Node) Node {
+	return Node{Type: Heading, Level: level, Children: children}
 }
 
-func ParagraphNode(text string) Node {
-	return Node{Type: Paragraph, Children: []Node{TextNode(text)}}
+func ParagraphNode(children ...Node) Node {
+	return Node{Type: Paragraph, Children: children}
 }
 
 func UnorderedListNode(listItems ...Node) Node {
@@ -93,10 +98,10 @@ func CodeBlockNode(lines []string) Node {
 	}
 }
 
-func BlockQuoteNode(lines []string) Node {
+func BlockQuoteNode(children ...Node) Node {
 	return Node{
 		Type:     BlockQuote,
-		Children: []Node{TextNode(strings.Join(lines, "\n"))},
+		Children: children,
 	}
 }
 
@@ -112,20 +117,28 @@ func TextNode(text string) Node {
 	return Node{Type: Text, Text: text}
 }
 
-func StrongNode() Node {
-	return Node{Type: Strong}
+func StrongNode(children ...Node) Node {
+	return Node{Type: Strong, Children: children}
 }
 
-func ItalicNode() Node {
-	return Node{Type: Italic}
+func ItalicNode(children ...Node) Node {
+	return Node{Type: Italic, Children: children}
 }
 
-func ImageNode() Node {
-	return Node{Type: Image}
+func CodeNode(text string) Node {
+	return Node{Type: Code, Text: text}
 }
 
-func LinkNode() Node {
-	return Node{Type: Link}
+func StrikeThroughNode(children ...Node) Node {
+	return Node{Type: StrikeThrough, Children: children}
+}
+
+func ImageNode(alt string, src string) Node {
+	return Node{Type: Image, Alt: alt, Src: src}
+}
+
+func LinkNode(href string, children ...Node) Node {
+	return Node{Type: Link, Href: href, Children: children}
 }
 
 func NewLineNode() Node {
