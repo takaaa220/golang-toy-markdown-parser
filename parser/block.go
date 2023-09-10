@@ -18,8 +18,8 @@ func (p *Parser) block(currentIndent int) (ast.Node, error) {
 		return p.unorderedList(currentIndent)
 	case isOrderedList(line):
 		return p.orderedList(currentIndent)
-	// case line[0] == '|':
-	// 	return table()
+	case isTable(line):
+		return p.table(currentIndent)
 	default:
 		return p.paragraph(currentIndent)
 	}

@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -14,6 +15,8 @@ const (
 	UnorderedList NodeType = "UnorderedList"
 	ListItem      NodeType = "ListItem"
 	Table         NodeType = "Table"
+	TableRow      NodeType = "TableRow"
+	TableCell     NodeType = "TableCell"
 	CodeBlock     NodeType = "CodeBlock"
 	BlockQuote    NodeType = "BlockQuote"
 	Header        NodeType = "Header"
@@ -37,7 +40,21 @@ type HeadingAttribute struct {
 	Level int
 }
 
-type TableAttribute struct{}
+type TableColumnAlign string
+
+const (
+	TableColumnAlignLeft   TableColumnAlign = "Left"
+	TableColumnAlignCenter TableColumnAlign = "Center"
+	TableColumnAlignRight  TableColumnAlign = "Right"
+)
+
+type TableColumnDefinition struct {
+	Align TableColumnAlign
+}
+
+type TableAttribute struct {
+	Columns []TableColumnDefinition
+}
 
 type LinkAttribute struct {
 	Href string
@@ -58,6 +75,20 @@ type Node struct {
 	Children  []Node
 	Attribute interface{}
 	// Raw       string
+}
+
+func (n Node) String() string {
+	return n._string(0)
+}
+
+func (n Node) _string(indent int) string {
+	text := fmt.Sprintf("%s%s %s", strings.Repeat(" ", indent), n.Type, n.Text)
+
+	for _, child := range n.Children {
+		text += "\n" + child._string(indent+2)
+	}
+
+	return text
 }
 
 func HeadingNode(level int, children ...Node) Node {
@@ -87,8 +118,22 @@ func ListItemNode(children ...Node) Node {
 	}
 }
 
-func TableNode(attribute TableAttribute) Node {
-	return Node{Type: Table, Attribute: attribute}
+func TableNode(columnDefinitions []TableColumnDefinition, children ...Node) Node {
+	return Node{
+		Type:     Table,
+		Children: children,
+		Attribute: TableAttribute{
+			Columns: columnDefinitions,
+		},
+	}
+}
+
+func TableRowNode(children ...Node) Node {
+	return Node{Type: TableRow, Children: children}
+}
+
+func TableCellNode(children ...Node) Node {
+	return Node{Type: TableCell, Children: children}
 }
 
 func CodeBlockNode(lines []string, language string) Node {
