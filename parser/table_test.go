@@ -81,6 +81,41 @@ func TestParser_table(t *testing.T) {
 				),
 			),
 		},
+		{
+			input: strings.Join([]string{
+				"| aaa | bbb | ccc |",
+				"| --- | :--- | :---: |",
+			}, "\n"),
+			want:    ast.Node{},
+			wantErr: true,
+		},
+		{
+			input: strings.Join([]string{
+				"| aaa | bbb | ccc ",
+				"| --- | :--- | :---: |",
+				"| 1 | 2 | 3 |",
+			}, "\n"),
+			want:    ast.Node{},
+			wantErr: true,
+		},
+		{
+			input: strings.Join([]string{
+				"| aaa | bbb | ccc |",
+				"| --- | :--- | :---: |",
+				"| 1 | 2 |",
+			}, "\n"),
+			want:    ast.Node{},
+			wantErr: true,
+		},
+		{
+			input: strings.Join([]string{
+				"| aaa | bbb | ccc |",
+				"| -*-- | *--- | ---* |",
+				"| 1 | 2 | 3 |",
+			}, "\n"),
+			want:    ast.Node{},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {

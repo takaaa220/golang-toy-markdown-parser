@@ -15,17 +15,10 @@ func (p *Parser) table(currentIndent int) (ast.Node, error) {
 	headerCellTexts := getCellTexts(p.next().getText(currentIndent))
 	columnLength := len(headerCellTexts)
 
-	headerCells := make([]ast.Node, columnLength)
-	for i, cellText := range headerCellTexts {
-		inlineChildren, err := inline(cellText)
-		if err != nil {
-			return ast.Node{}, err
-		}
-
-		headerCells[i] = ast.TableCellNode(inlineChildren...)
+	headerRow, err := convertToRow(headerCellTexts)
+	if err != nil {
+		return ast.Node{}, err
 	}
-
-	headerRow := ast.TableRowNode(headerCells...)
 
 	if !p.hasNext() {
 		return ast.Node{}, ParseError{Message: "invalid table", Line: p.lineCursor, From: 0, To: 0}
@@ -59,21 +52,16 @@ func (p *Parser) table(currentIndent int) (ast.Node, error) {
 		}
 
 		cellTexts := getCellTexts(line)
-		cells := make([]ast.Node, columnLength)
-		for i, cellText := range cellTexts {
-			inlineChildren, err := inline(cellText)
-			if err != nil {
-				return ast.Node{}, err
-			}
-
-			cells[i] = ast.TableCellNode(inlineChildren...)
-		}
-
-		if len(cells) != columnLength {
+		if len(cellTexts) != columnLength {
 			return ast.Node{}, ParseError{Message: "invalid table", Line: p.lineCursor, From: 0, To: 0}
 		}
 
-		rows = append(rows, ast.TableRowNode(cells...))
+		row, err := convertToRow(cellTexts)
+		if err != nil {
+			return ast.Node{}, err
+		}
+
+		rows = append(rows, row)
 
 		p.next()
 	}
@@ -116,6 +104,21 @@ func convertAligns(aligns []string) ([]ast.TableColumnAlign, bool) {
 	}
 
 	return result, true
+}
+
+func convertToRow(cellTexts []string) (ast.Node, error) {
+	cells := make([]ast.Node, len(cellTexts))
+
+	for i, cellText := range cellTexts {
+		inlineChildren, err := inline(cellText)
+		if err != nil {
+			return ast.Node{}, err
+		}
+
+		cells[i] = ast.TableCellNode(inlineChildren...)
+	}
+
+	return ast.TableRowNode(cells...), nil
 }
 
 func isTable(line string) bool {
