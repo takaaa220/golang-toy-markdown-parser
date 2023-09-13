@@ -25,30 +25,30 @@ func TestParser_orderedList(t *testing.T) {
 				"  1. list1-2-1",
 				"2. list2",
 			}, "\n"),
-			want: ast.OrderedListNode(
-				ast.ListItemNode(
-					ast.TextNode("list1"),
-					ast.OrderedListNode(
-						ast.ListItemNode(
-							ast.TextNode("list1-1"),
-							ast.OrderedListNode(
-								ast.ListItemNode(
-									ast.TextNode("list1-1-1"),
+			want: ast.NewOrderedList(
+				ast.NewListItem(
+					ast.NewText("list1"),
+					ast.NewOrderedList(
+						ast.NewListItem(
+							ast.NewText("list1-1"),
+							ast.NewOrderedList(
+								ast.NewListItem(
+									ast.NewText("list1-1-1"),
 								),
 							),
 						),
-						ast.ListItemNode(
-							ast.TextNode("list1-2"),
-							ast.OrderedListNode(
-								ast.ListItemNode(
-									ast.TextNode("list1-2-1"),
+						ast.NewListItem(
+							ast.NewText("list1-2"),
+							ast.NewOrderedList(
+								ast.NewListItem(
+									ast.NewText("list1-2-1"),
 								),
 							),
 						),
 					),
 				),
-				ast.ListItemNode(
-					ast.TextNode("list2"),
+				ast.NewListItem(
+					ast.NewText("list2"),
 				),
 			),
 		},
@@ -57,9 +57,9 @@ func TestParser_orderedList(t *testing.T) {
 				"1. list1",
 				"1. list2",
 			}, "\n"),
-			want: ast.OrderedListNode(
-				ast.ListItemNode(
-					ast.TextNode("list1"),
+			want: ast.NewOrderedList(
+				ast.NewListItem(
+					ast.NewText("list1"),
 				),
 			),
 		},

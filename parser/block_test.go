@@ -44,7 +44,7 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: -1,
 			},
-			want: ast.HeadingNode(1, ast.TextNode("heading")),
+			want: ast.NewHeading(1, ast.NewText("heading")),
 		},
 		{
 			name: "test2",
@@ -52,7 +52,7 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: 0,
 			},
-			want: ast.HeadingNode(2, ast.TextNode("heading")),
+			want: ast.NewHeading(2, ast.NewText("heading")),
 		},
 		{
 			name: "test3",
@@ -60,14 +60,14 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: 2,
 			},
-			want: ast.UnorderedListNode(
-				ast.ListItemNode(
-					ast.TextNode("hello"),
-					ast.HeadingNode(3, ast.TextNode("heading")),
-					ast.ParagraphNode(ast.TextNode("text")),
+			want: ast.NewUnorderedList(
+				ast.NewListItem(
+					ast.NewText("hello"),
+					ast.NewHeading(3, ast.NewText("heading")),
+					ast.NewParagraph(ast.NewText("text")),
 				),
-				ast.ListItemNode(
-					ast.TextNode("world"),
+				ast.NewListItem(
+					ast.NewText("world"),
 				),
 			),
 		},
@@ -77,12 +77,12 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: 6,
 			},
-			want: ast.OrderedListNode(
-				ast.ListItemNode(
-					ast.TextNode("list"),
+			want: ast.NewOrderedList(
+				ast.NewListItem(
+					ast.NewText("list"),
 				),
-				ast.ListItemNode(
-					ast.TextNode("list"),
+				ast.NewListItem(
+					ast.NewText("list"),
 				),
 			),
 		},
@@ -92,7 +92,7 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: 9,
 			},
-			want: ast.CodeBlockNode([]string{
+			want: ast.NewCodeBlock([]string{
 				`fmt.Print("hello")`,
 			}, "go"),
 		},
@@ -102,9 +102,9 @@ func TestParser_block(t *testing.T) {
 				lines:      input,
 				lineCursor: 13,
 			},
-			want: ast.BlockQuoteNode(
-				ast.TextNode("blockquote1"),
-				ast.TextNode("blockquote2"),
+			want: ast.NewBlockQuote(
+				ast.NewText("blockquote1"),
+				ast.NewText("blockquote2"),
 			),
 		},
 	}

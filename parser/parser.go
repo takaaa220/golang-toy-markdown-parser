@@ -82,7 +82,7 @@ func (p *Parser) Parse(currentIndent int) ([]ast.Node, error) {
 			return nil, err
 		}
 
-		if node.Type == ast.Empty {
+		if node.Type() == ast.EmptyType {
 			continue
 		}
 

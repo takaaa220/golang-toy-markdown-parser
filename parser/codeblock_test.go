@@ -26,7 +26,7 @@ func TestParser_codeblock(t *testing.T) {
 				"}",
 				"```",
 			}, "\n"),
-			want: ast.CodeBlockNode(
+			want: ast.NewCodeBlock(
 				[]string{
 					"v, err := main()",
 					"if err != nil {",
@@ -47,7 +47,7 @@ func TestParser_codeblock(t *testing.T) {
 				"  ```",
 			}, "\n"),
 			currentCursor: 2,
-			want: ast.CodeBlockNode(
+			want: ast.NewCodeBlock(
 				[]string{
 					"v, err := main()",
 					"if err != nil {",
@@ -67,7 +67,7 @@ func TestParser_codeblock(t *testing.T) {
 				"}",
 				"```",
 			}, "\n"),
-			want: ast.CodeBlockNode(
+			want: ast.NewCodeBlock(
 				[]string{
 					"v, err := main()",
 					"if err != nil {",

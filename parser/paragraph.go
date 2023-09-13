@@ -6,13 +6,13 @@ func (p *Parser) paragraph(currentIndent int, state *blockParsedState) (ast.Node
 	line := p.next(state).getText(currentIndent)
 
 	if line == "" {
-		return ast.EmptyNode(), nil
+		return ast.NewEmpty(), nil
 	}
 
 	children, err := inline(line)
 	if err != nil {
-		return ast.Node{}, err
+		return &ast.NodeBase{}, err
 	}
 
-	return ast.ParagraphNode(children...), nil
+	return ast.NewParagraph(children...), nil
 }

@@ -9,7 +9,7 @@ import (
 
 func (p *Parser) table(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	if !p.hasNext() {
-		return ast.Node{}, BlockParseError{Message: "invalid table", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid table", State: *state}
 	}
 
 	headerCellTexts := getCellTexts(p.next(state).getText(currentIndent))
@@ -17,20 +17,20 @@ func (p *Parser) table(currentIndent int, state *blockParsedState) (ast.Node, er
 
 	headerRow, err := convertToRow(headerCellTexts, columnLength)
 	if err != nil {
-		return ast.Node{}, err
+		return &ast.NodeBase{}, err
 	}
 
 	if !p.hasNext() {
-		return ast.Node{}, BlockParseError{Message: "invalid table", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid table", State: *state}
 	}
 
 	aligns, ok := convertAligns(getCellTexts(p.next(state).getText(currentIndent)))
 	if !ok {
-		return ast.Node{}, BlockParseError{Message: "invalid table", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid table", State: *state}
 	}
 
 	if len(aligns) != columnLength {
-		return ast.Node{}, BlockParseError{Message: "invalid table", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid table", State: *state}
 	}
 
 	columnDefinitions := make([]ast.TableColumnDefinition, columnLength)
@@ -55,22 +55,22 @@ func (p *Parser) table(currentIndent int, state *blockParsedState) (ast.Node, er
 
 		cellTexts := getCellTexts(line)
 		if len(cellTexts) > columnLength {
-			return ast.Node{}, BlockParseError{Message: "invalid table", State: *state}
+			return &ast.NodeBase{}, BlockParseError{Message: "invalid table", State: *state}
 		}
 
 		row, err := convertToRow(cellTexts, columnLength)
 		if err != nil {
-			return ast.Node{}, err
+			return &ast.NodeBase{}, err
 		}
 
 		rows = append(rows, row)
 	}
 
 	if len(rows) == 0 {
-		return ast.Node{}, BlockParseError{Message: "invalid table", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid table", State: *state}
 	}
 
-	return ast.TableNode(columnDefinitions, append([]ast.Node{headerRow}, rows...)...), nil
+	return ast.NewTable(columnDefinitions, append([]ast.Node{headerRow}, rows...)...), nil
 }
 
 func getCellTexts(line string) []string {
@@ -117,13 +117,13 @@ func convertToRow(cellTexts []string, columnLength int) (ast.Node, error) {
 
 		inlineChildren, err := inline(cellText)
 		if err != nil {
-			return ast.Node{}, err
+			return &ast.NodeBase{}, err
 		}
 
-		cells[i] = ast.TableCellNode(inlineChildren...)
+		cells[i] = ast.NewTableCell(inlineChildren...)
 	}
 
-	return ast.TableRowNode(cells...), nil
+	return ast.NewTableRow(cells...), nil
 }
 
 func isTable(line string) bool {

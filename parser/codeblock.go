@@ -9,7 +9,7 @@ import (
 func (p *Parser) codeblock(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	firstLine := p.next(state).getText(currentIndent)
 	if !strings.HasPrefix(firstLine, "```") {
-		return ast.Node{}, BlockParseError{Message: "invalid codeblock", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid codeblock", State: *state}
 	}
 
 	language := strings.Trim(firstLine[3:], " ")
@@ -28,7 +28,7 @@ func (p *Parser) codeblock(currentIndent int, state *blockParsedState) (ast.Node
 		lines = append(lines, line)
 	}
 
-	return ast.CodeBlockNode(lines, language), nil
+	return ast.NewCodeBlock(lines, language), nil
 }
 
 func isCodeblock(line string) bool {

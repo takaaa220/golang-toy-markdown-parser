@@ -16,104 +16,104 @@ func Test_inline(t *testing.T) {
 		{
 			text: "hello",
 			want: []ast.Node{
-				ast.TextNode("hello"),
+				ast.NewText("hello"),
 			},
 		},
 		{
 			text: "hello `world` yeah",
 			want: []ast.Node{
-				ast.TextNode("hello "),
-				ast.CodeNode("world"),
-				ast.TextNode(" yeah"),
+				ast.NewText("hello "),
+				ast.NewCode("world"),
+				ast.NewText(" yeah"),
 			},
 		},
 		{
 			text: "hello [world](https://example.com) yeah",
 			want: []ast.Node{
-				ast.TextNode("hello "),
-				ast.LinkNode("https://example.com", ast.TextNode("world")),
-				ast.TextNode(" yeah"),
+				ast.NewText("hello "),
+				ast.NewLink("https://example.com", ast.NewText("world")),
+				ast.NewText(" yeah"),
 			},
 		},
 		{
 			text: "hello ![world](https://example.com) yeah",
 			want: []ast.Node{
-				ast.TextNode("hello "),
-				ast.ImageNode("world", "https://example.com"),
-				ast.TextNode(" yeah"),
+				ast.NewText("hello "),
+				ast.NewImage("world", "https://example.com"),
+				ast.NewText(" yeah"),
 			},
 		},
 		{
 			text: "hello **world** yeah",
 			want: []ast.Node{
-				ast.TextNode("hello "),
-				ast.StrongNode(ast.TextNode("world")),
-				ast.TextNode(" yeah"),
+				ast.NewText("hello "),
+				ast.NewStrong(ast.NewText("world")),
+				ast.NewText(" yeah"),
 			},
 		},
 		{
 			text: "hello *world* yeah",
 			want: []ast.Node{
-				ast.TextNode("hello "),
-				ast.ItalicNode(ast.TextNode("world")),
-				ast.TextNode(" yeah"),
+				ast.NewText("hello "),
+				ast.NewItalic(ast.NewText("world")),
+				ast.NewText(" yeah"),
 			},
 		},
 		{
 			text: "hello ~~world~~ yeah",
 			want: []ast.Node{
-				ast.TextNode("hello "),
-				ast.StrikeThroughNode(ast.TextNode("world")),
-				ast.TextNode(" yeah"),
+				ast.NewText("hello "),
+				ast.NewStrikeThrough(ast.NewText("world")),
+				ast.NewText(" yeah"),
 			},
 		},
 		{
 			text: "hello **world yeah",
 			want: []ast.Node{
-				ast.TextNode("hello **world yeah"),
+				ast.NewText("hello **world yeah"),
 			},
 		},
 		{
 			text: "hello *world yeah",
 			want: []ast.Node{
-				ast.TextNode("hello *world yeah"),
+				ast.NewText("hello *world yeah"),
 			},
 		},
 		// {
 		// 	// TODO: Support this case
 		// 	text: "***hello** world* yeah",
 		// 	want: []ast.Node{
-		// 		ast.ItalicNode(
-		// 			ast.StrongNode(
-		// 				ast.TextNode("hello"),
+		// 		ast.NewItalic(
+		// 			ast.NewStrong(
+		// 				ast.NewText("hello"),
 		// 			),
-		// 			ast.TextNode(" world"),
+		// 			ast.NewText(" world"),
 		// 		),
-		// 		ast.TextNode(" yeah"),
+		// 		ast.NewText(" yeah"),
 		// 	},
 		// },
 		{
 			text: "***hello* world** yeah",
 			want: []ast.Node{
-				ast.StrongNode(
-					ast.ItalicNode(
-						ast.TextNode("hello"),
+				ast.NewStrong(
+					ast.NewItalic(
+						ast.NewText("hello"),
 					),
-					ast.TextNode(" world"),
+					ast.NewText(" world"),
 				),
-				ast.TextNode(" yeah"),
+				ast.NewText(" yeah"),
 			},
 		},
 		{
 			text: "~hello **world**~ yeah",
 			want: []ast.Node{
-				ast.StrikeThroughNode(
-					ast.TextNode("hello "),
-					ast.StrongNode(
-						ast.TextNode("world"),
+				ast.NewStrikeThrough(
+					ast.NewText("hello "),
+					ast.NewStrong(
+						ast.NewText("world"),
 					),
 				),
-				ast.TextNode(" yeah"),
+				ast.NewText(" yeah"),
 			},
 		},
 	}

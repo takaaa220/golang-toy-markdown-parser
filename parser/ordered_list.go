@@ -9,7 +9,7 @@ import (
 
 func (p *Parser) orderedList(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	listItems := []ast.Node{}
-	var beforeListItem *ast.Node
+	var beforeListItem *ast.ListItem
 
 	for {
 		if !p.hasNext() {
@@ -22,19 +22,17 @@ func (p *Parser) orderedList(currentIndent int, state *blockParsedState) (ast.No
 			break
 		}
 
-		lineText := line.getText(currentIndent)
-
 		if indent > currentIndent {
 			if beforeListItem == nil {
-				return ast.Node{}, BlockParseError{Message: "invalid ordered list", State: *state}
+				return &ast.NodeBase{}, BlockParseError{Message: "invalid ordered list", State: *state}
 			}
 
 			children, err := p.Parse(indent)
 			if err != nil {
-				return ast.Node{}, err
+				return &ast.NodeBase{}, err
 			}
 
-			beforeListItem.Children = append(beforeListItem.Children, children...)
+			beforeListItem.AppendChildren(children...)
 
 			continue
 		}
@@ -44,34 +42,33 @@ func (p *Parser) orderedList(currentIndent int, state *blockParsedState) (ast.No
 			currentListItemNumber++
 		}
 
-		listText, isListItem := getOrderedListItemText(lineText, currentListItemNumber)
+		listText, isListItem := getOrderedListItemText(line.getText(currentIndent), currentListItemNumber)
 		if !isListItem {
 			break
 		}
 
 		if beforeListItem != nil {
-			listItems = append(listItems, *beforeListItem)
+			listItems = append(listItems, beforeListItem)
 		}
 
 		listItemChildren, err := inline(listText)
 		if err != nil {
-			return ast.Node{}, err
+			return &ast.NodeBase{}, err
 		}
 
-		listItem := ast.ListItemNode(listItemChildren...)
-		beforeListItem = &listItem
+		beforeListItem = ast.NewListItem(listItemChildren...)
 		p.next(state)
 	}
 
 	if beforeListItem != nil {
-		listItems = append(listItems, *beforeListItem)
+		listItems = append(listItems, beforeListItem)
 	}
 
 	if len(listItems) == 0 {
-		return ast.Node{}, BlockParseError{Message: "invalid ordered list", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid ordered list", State: *state}
 	}
 
-	return ast.OrderedListNode(listItems...), nil
+	return ast.NewOrderedList(listItems...), nil
 }
 
 func isOrderedList(line string) bool {

@@ -23,7 +23,7 @@ func TestParser_table(t *testing.T) {
 				"| 1 | 2 | 3 | 4 |",
 				"| a | b | c | d |",
 			}, "\n"),
-			want: ast.TableNode(
+			want: ast.NewTable(
 				[]ast.TableColumnDefinition{
 					{
 						Align: ast.TableColumnAlignLeft,
@@ -38,46 +38,46 @@ func TestParser_table(t *testing.T) {
 						Align: ast.TableColumnAlignRight,
 					},
 				},
-				ast.TableRowNode(
-					ast.TableCellNode(
-						ast.TextNode("aaa"),
+				ast.NewTableRow(
+					ast.NewTableCell(
+						ast.NewText("aaa"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("bbb"),
+					ast.NewTableCell(
+						ast.NewText("bbb"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("ccc"),
+					ast.NewTableCell(
+						ast.NewText("ccc"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("ddd"),
-					),
-				),
-				ast.TableRowNode(
-					ast.TableCellNode(
-						ast.TextNode("1"),
-					),
-					ast.TableCellNode(
-						ast.TextNode("2"),
-					),
-					ast.TableCellNode(
-						ast.TextNode("3"),
-					),
-					ast.TableCellNode(
-						ast.TextNode("4"),
+					ast.NewTableCell(
+						ast.NewText("ddd"),
 					),
 				),
-				ast.TableRowNode(
-					ast.TableCellNode(
-						ast.TextNode("a"),
+				ast.NewTableRow(
+					ast.NewTableCell(
+						ast.NewText("1"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("b"),
+					ast.NewTableCell(
+						ast.NewText("2"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("c"),
+					ast.NewTableCell(
+						ast.NewText("3"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("d"),
+					ast.NewTableCell(
+						ast.NewText("4"),
+					),
+				),
+				ast.NewTableRow(
+					ast.NewTableCell(
+						ast.NewText("a"),
+					),
+					ast.NewTableCell(
+						ast.NewText("b"),
+					),
+					ast.NewTableCell(
+						ast.NewText("c"),
+					),
+					ast.NewTableCell(
+						ast.NewText("d"),
 					),
 				),
 			),
@@ -88,7 +88,7 @@ func TestParser_table(t *testing.T) {
 				"| --- | :--- | :---: |",
 				"| 1 | 2 |",
 			}, "\n"),
-			want: ast.TableNode(
+			want: ast.NewTable(
 				[]ast.TableColumnDefinition{
 					{
 						Align: ast.TableColumnAlignLeft,
@@ -100,26 +100,26 @@ func TestParser_table(t *testing.T) {
 						Align: ast.TableColumnAlignCenter,
 					},
 				},
-				ast.TableRowNode(
-					ast.TableCellNode(
-						ast.TextNode("aaa"),
+				ast.NewTableRow(
+					ast.NewTableCell(
+						ast.NewText("aaa"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("bbb"),
+					ast.NewTableCell(
+						ast.NewText("bbb"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("ccc"),
+					ast.NewTableCell(
+						ast.NewText("ccc"),
 					),
 				),
-				ast.TableRowNode(
-					ast.TableCellNode(
-						ast.TextNode("1"),
+				ast.NewTableRow(
+					ast.NewTableCell(
+						ast.NewText("1"),
 					),
-					ast.TableCellNode(
-						ast.TextNode("2"),
+					ast.NewTableCell(
+						ast.NewText("2"),
 					),
-					ast.TableCellNode(
-						ast.EmptyNode(),
+					ast.NewTableCell(
+						ast.NewEmpty(),
 					),
 				),
 			),
@@ -129,7 +129,7 @@ func TestParser_table(t *testing.T) {
 				"| aaa | bbb | ccc |",
 				"| --- | :--- | :---: |",
 			}, "\n"),
-			want:    ast.Node{},
+			want:    &ast.NodeBase{},
 			wantErr: true,
 			state: blockParsedState{
 				lines: []Line{
@@ -145,7 +145,7 @@ func TestParser_table(t *testing.T) {
 				"| --- | :--- | :---: |",
 				"| 1 | 2 | 3 |",
 			}, "\n"),
-			want:    ast.Node{},
+			want:    &ast.NodeBase{},
 			wantErr: true,
 			state: blockParsedState{
 				lines: []Line{
@@ -161,7 +161,7 @@ func TestParser_table(t *testing.T) {
 				"| -*-- | *--- | ---* |",
 				"| 1 | 2 | 3 |",
 			}, "\n"),
-			want:    ast.Node{},
+			want:    &ast.NodeBase{},
 			wantErr: true,
 			state: blockParsedState{
 				lines: []Line{

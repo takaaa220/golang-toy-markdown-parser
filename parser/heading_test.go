@@ -17,24 +17,24 @@ func TestParser_heading(t *testing.T) {
 	}{
 		{
 			input: "# heading",
-			want:  ast.HeadingNode(1, ast.TextNode("heading")),
+			want:  ast.NewHeading(1, ast.NewText("heading")),
 		},
 		{
 			input: "##  heading",
-			want:  ast.HeadingNode(2, ast.TextNode("heading")),
+			want:  ast.NewHeading(2, ast.NewText("heading")),
 		},
 		{
 			input:         "  ### heading",
 			currentIndent: 2,
-			want:          ast.HeadingNode(3, ast.TextNode("heading")),
+			want:          ast.NewHeading(3, ast.NewText("heading")),
 		},
 		{
 			input:         "  ### he**ad**ing",
 			currentIndent: 2,
-			want: ast.HeadingNode(3,
-				ast.TextNode("he"),
-				ast.StrongNode(ast.TextNode("ad")),
-				ast.TextNode("ing"),
+			want: ast.NewHeading(3,
+				ast.NewText("he"),
+				ast.NewStrong(ast.NewText("ad")),
+				ast.NewText("ing"),
 			),
 		},
 		{

@@ -20,7 +20,7 @@ func (p *Parser) blockquote(currentIndent int, state *blockParsedState) (ast.Nod
 
 		inlineChildren, err := inline(strings.TrimLeft(line[1:], " "))
 		if err != nil {
-			return ast.Node{}, err
+			return &ast.NodeBase{}, err
 		}
 
 		children = append(children, inlineChildren...)
@@ -28,10 +28,10 @@ func (p *Parser) blockquote(currentIndent int, state *blockParsedState) (ast.Nod
 	}
 
 	if len(children) == 0 {
-		return ast.Node{}, BlockParseError{Message: "invalid blockquote", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid blockquote", State: *state}
 	}
 
-	return ast.BlockQuoteNode(children...), nil
+	return ast.NewBlockQuote(children...), nil
 }
 
 func isBlockQuote(line string) bool {

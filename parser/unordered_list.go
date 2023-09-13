@@ -10,7 +10,7 @@ import (
 func (p *Parser) unorderedList(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	listItems := []ast.Node{}
 	var usingSymbol rune
-	var beforeListItem *ast.Node
+	var beforeListItem *ast.ListItem
 
 	for {
 		if !p.hasNext() {
@@ -24,15 +24,15 @@ func (p *Parser) unorderedList(currentIndent int, state *blockParsedState) (ast.
 		}
 		if indent > currentIndent {
 			if beforeListItem == nil {
-				return ast.Node{}, BlockParseError{Message: "invalid unordered list", State: *state}
+				return &ast.NodeBase{}, BlockParseError{Message: "invalid unordered list", State: *state}
 			}
 
 			children, err := p.Parse(indent)
 			if err != nil {
-				return ast.Node{}, err
+				return &ast.NodeBase{}, err
 			}
 
-			beforeListItem.Children = append(beforeListItem.Children, children...)
+			beforeListItem.AppendChildren(children...)
 
 			continue
 		}
@@ -45,29 +45,27 @@ func (p *Parser) unorderedList(currentIndent int, state *blockParsedState) (ast.
 		usingSymbol = symbol
 
 		if beforeListItem != nil {
-			listItems = append(listItems, *beforeListItem)
+			listItems = append(listItems, beforeListItem)
 		}
 
 		listItemChildren, err := inline(listText)
 		if err != nil {
-			return ast.Node{}, err
+			return &ast.NodeBase{}, err
 		}
 
-		listItem := ast.ListItemNode(listItemChildren...)
-		beforeListItem = &listItem
-
+		beforeListItem = ast.NewListItem(listItemChildren...)
 		p.next(state)
 	}
 
 	if beforeListItem != nil {
-		listItems = append(listItems, *beforeListItem)
+		listItems = append(listItems, beforeListItem)
 	}
 
 	if len(listItems) == 0 {
-		return ast.Node{}, BlockParseError{Message: "invalid unordered list", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid unordered list", State: *state}
 	}
 
-	return ast.UnorderedListNode(listItems...), nil
+	return ast.NewUnorderedList(listItems...), nil
 }
 
 func getUnorderedListItemText(line string, usingSymbol rune) (string, rune, bool) {

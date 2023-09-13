@@ -22,9 +22,9 @@ func inline(text string) ([]ast.Node, error) {
 				}
 
 				if currentText != "" {
-					nodes = append(nodes, ast.TextNode(currentText))
+					nodes = append(nodes, ast.NewText(currentText))
 				}
-				nodes = append(nodes, ast.StrongNode(strongNodes...))
+				nodes = append(nodes, ast.NewStrong(strongNodes...))
 
 				cursor += cursorOffset - 1 // -1 for front "*"
 				currentText = ""
@@ -40,9 +40,9 @@ func inline(text string) ([]ast.Node, error) {
 				}
 
 				if currentText != "" {
-					nodes = append(nodes, ast.TextNode(currentText))
+					nodes = append(nodes, ast.NewText(currentText))
 				}
-				nodes = append(nodes, ast.ItalicNode(italicNodes...))
+				nodes = append(nodes, ast.NewItalic(italicNodes...))
 
 				cursor += cursorOffset - 1 // -1 for front "*"
 				currentText = ""
@@ -65,9 +65,9 @@ func inline(text string) ([]ast.Node, error) {
 			}
 
 			if currentText != "" {
-				nodes = append(nodes, ast.TextNode(currentText))
+				nodes = append(nodes, ast.NewText(currentText))
 			}
-			nodes = append(nodes, ast.StrikeThroughNode(strikeThroughNodes...))
+			nodes = append(nodes, ast.NewStrikeThrough(strikeThroughNodes...))
 
 			cursor += cursorOffset - 1 // -1 for front "~"
 			currentText = ""
@@ -80,9 +80,9 @@ func inline(text string) ([]ast.Node, error) {
 			}
 
 			if currentText != "" {
-				nodes = append(nodes, ast.TextNode(currentText))
+				nodes = append(nodes, ast.NewText(currentText))
 			}
-			nodes = append(nodes, ast.CodeNode(codeText))
+			nodes = append(nodes, ast.NewCode(codeText))
 
 			cursor += cursorOffset - 1 // -1 for front backquote
 			currentText = ""
@@ -95,9 +95,9 @@ func inline(text string) ([]ast.Node, error) {
 			}
 
 			if currentText != "" {
-				nodes = append(nodes, ast.TextNode(currentText))
+				nodes = append(nodes, ast.NewText(currentText))
 			}
-			nodes = append(nodes, ast.LinkNode(href, ast.TextNode(linkText)))
+			nodes = append(nodes, ast.NewLink(href, ast.NewText(linkText)))
 
 			cursor += cursorOffset - 1 // -1 for front `[`
 			currentText = ""
@@ -110,9 +110,9 @@ func inline(text string) ([]ast.Node, error) {
 			}
 
 			if currentText != "" {
-				nodes = append(nodes, ast.TextNode(currentText))
+				nodes = append(nodes, ast.NewText(currentText))
 			}
-			nodes = append(nodes, ast.ImageNode(alt, src))
+			nodes = append(nodes, ast.NewImage(alt, src))
 
 			cursor += cursorOffset - 1 // -1 for front `!`
 			currentText = ""
@@ -124,11 +124,11 @@ func inline(text string) ([]ast.Node, error) {
 	}
 
 	if currentText != "" {
-		nodes = append(nodes, ast.TextNode(currentText))
+		nodes = append(nodes, ast.NewText(currentText))
 	}
 
 	if len(nodes) == 0 {
-		return []ast.Node{ast.EmptyNode()}, nil
+		return []ast.Node{ast.NewEmpty()}, nil
 	}
 
 	return nodes, nil

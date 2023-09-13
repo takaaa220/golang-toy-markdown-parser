@@ -21,9 +21,9 @@ func TestParser_blockquote(t *testing.T) {
 		{
 			input: `> blockquote1
 > blockquote2`,
-			want: ast.BlockQuoteNode(
-				ast.TextNode("blockquote1"),
-				ast.TextNode("blockquote2"),
+			want: ast.NewBlockQuote(
+				ast.NewText("blockquote1"),
+				ast.NewText("blockquote2"),
 			),
 			wantCursor: 1,
 		},
@@ -32,9 +32,9 @@ func TestParser_blockquote(t *testing.T) {
 > blockquote2
 hello world,
 `,
-			want: ast.BlockQuoteNode(
-				ast.TextNode("blockquote1"),
-				ast.TextNode("blockquote2"),
+			want: ast.NewBlockQuote(
+				ast.NewText("blockquote1"),
+				ast.NewText("blockquote2"),
 			),
 			wantCursor: 1,
 		},
@@ -44,9 +44,9 @@ hello world,
 				" > blockquote2",
 			}, "\n"),
 			currentIndent: 1,
-			want: ast.BlockQuoteNode(
-				ast.TextNode("blockquote1"),
-				ast.TextNode("blockquote2"),
+			want: ast.NewBlockQuote(
+				ast.NewText("blockquote1"),
+				ast.NewText("blockquote2"),
 			),
 			wantCursor: 1,
 		},
@@ -56,11 +56,11 @@ hello world,
 				"> blockquote2",
 			}, "\n"),
 			currentIndent: 0,
-			want: ast.BlockQuoteNode(
-				ast.TextNode("block"),
-				ast.StrongNode(ast.TextNode("quote")),
-				ast.TextNode("1"),
-				ast.TextNode("blockquote2"),
+			want: ast.NewBlockQuote(
+				ast.NewText("block"),
+				ast.NewStrong(ast.NewText("quote")),
+				ast.NewText("1"),
+				ast.NewText("blockquote2"),
 			),
 			wantCursor: 1,
 		},

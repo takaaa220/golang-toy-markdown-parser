@@ -16,21 +16,21 @@ func TestParser_paragraph(t *testing.T) {
 	}{
 		{
 			input: `hello world`,
-			want: ast.ParagraphNode(
-				ast.TextNode("hello world"),
+			want: ast.NewParagraph(
+				ast.NewText("hello world"),
 			),
 		},
 		{
 			input: "",
-			want:  ast.EmptyNode(),
+			want:  ast.NewEmpty(),
 		},
 		{
 			input: `he**llo** world
 YEAH!`,
-			want: ast.ParagraphNode(
-				ast.TextNode("he"),
-				ast.StrongNode(ast.TextNode("llo")),
-				ast.TextNode(" world"),
+			want: ast.NewParagraph(
+				ast.NewText("he"),
+				ast.NewStrong(ast.NewText("llo")),
+				ast.NewText(" world"),
 			),
 		},
 	}

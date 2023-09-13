@@ -15,19 +15,19 @@ func (p *Parser) heading(currentIndent int, state *blockParsedState) (ast.Node, 
 		level++
 	}
 	if level == 0 || level > 6 {
-		return ast.Node{}, BlockParseError{Message: "invalid heading", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid heading", State: *state}
 	}
 
 	if line[level] != ' ' {
-		return ast.Node{}, BlockParseError{Message: "invalid heading", State: *state}
+		return &ast.NodeBase{}, BlockParseError{Message: "invalid heading", State: *state}
 	}
 
 	children, err := inline(strings.TrimLeft(line[level:], " "))
 	if err != nil {
-		return ast.Node{}, err
+		return &ast.NodeBase{}, err
 	}
 
-	return ast.HeadingNode(level, children...), nil
+	return ast.NewHeading(level, children...), nil
 }
 
 func isHeading(line string) bool {
