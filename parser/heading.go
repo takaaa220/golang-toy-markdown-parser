@@ -7,9 +7,7 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (p *Parser) heading(currentIndent int) (ast.Node, error) {
-	state := p.newState()
-
+func (p *Parser) heading(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	line := p.next(state).getText(currentIndent)
 
 	level := 0

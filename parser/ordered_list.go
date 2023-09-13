@@ -7,11 +7,9 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
+func (p *Parser) orderedList(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	listItems := []ast.Node{}
 	var beforeListItem *ast.Node
-
-	state := p.newState()
 
 	for {
 		if !p.hasNext() {

@@ -86,7 +86,8 @@ hello world,
 				p.lineCursor = tt.currentCursor
 			}
 
-			got, err := p.blockquote(tt.currentIndent)
+			state := p.newState()
+			got, err := p.blockquote(tt.currentIndent, state)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("Parser.blockquote() error = %v, wantErr %v", err, tt.wantErr)

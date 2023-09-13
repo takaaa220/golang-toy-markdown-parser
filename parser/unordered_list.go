@@ -7,9 +7,7 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (p *Parser) unorderedList(currentIndent int) (ast.Node, error) {
-	state := p.newState()
-
+func (p *Parser) unorderedList(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	listItems := []ast.Node{}
 	var usingSymbol rune
 	var beforeListItem *ast.Node

@@ -6,10 +6,8 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (p *Parser) blockquote(currentIndent int) (ast.Node, error) {
+func (p *Parser) blockquote(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	children := []ast.Node{}
-
-	state := p.newState()
 
 	for {
 		if !p.hasNext() {

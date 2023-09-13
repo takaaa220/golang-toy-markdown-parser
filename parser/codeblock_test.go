@@ -92,7 +92,9 @@ func TestParser_codeblock(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			p := NewParser(tt.input)
-			got, err := p.codeblock(tt.currentCursor)
+			state := p.newState()
+
+			got, err := p.codeblock(tt.currentCursor, state)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("Parser.codeblock() error = %v, wantErr %v", err, tt.wantErr)

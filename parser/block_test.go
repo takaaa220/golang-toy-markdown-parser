@@ -115,11 +115,12 @@ func TestParser_block(t *testing.T) {
 				lines = append(lines, Line{line})
 			}
 
-			l := &Parser{
+			p := &Parser{
 				lines:      lines,
 				lineCursor: tt.fields.lineCursor,
 			}
-			got, err := l.block(tt.currentIndent)
+			state := p.newState()
+			got, err := p.block(tt.currentIndent, state)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Parser.block() error = %v, wantErr %v", err, tt.wantErr)
 				return

@@ -117,8 +117,9 @@ func TestParser_unorderedList(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			l := NewParser(tt.input)
-			got, err := l.unorderedList(tt.currentIndent)
+			p := NewParser(tt.input)
+			state := p.newState()
+			got, err := p.unorderedList(tt.currentIndent, state)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("Parser.unorderedList() error = %v, wantErr %v", err, tt.wantErr)

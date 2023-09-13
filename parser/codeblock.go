@@ -6,9 +6,7 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (p *Parser) codeblock(currentIndent int) (ast.Node, error) {
-	state := p.newState()
-
+func (p *Parser) codeblock(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	firstLine := p.next(state).getText(currentIndent)
 	if !strings.HasPrefix(firstLine, "```") {
 		return ast.Node{}, BlockParseError{Message: "invalid codeblock", State: *state}

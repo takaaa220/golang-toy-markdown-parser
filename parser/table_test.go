@@ -176,8 +176,9 @@ func TestParser_table(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			p := NewParser(tt.input)
+			state := p.newState()
 
-			got, err := p.table(tt.currentIndent)
+			got, err := p.table(tt.currentIndent, state)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("Parser.table() error = %v, wantErr %v", err, tt.wantErr)

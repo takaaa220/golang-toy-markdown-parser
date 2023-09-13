@@ -37,7 +37,10 @@ YEAH!`,
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			p := NewParser(tt.input)
-			got, err := p.paragraph(tt.currentIndent)
+			state := p.newState()
+
+			got, err := p.paragraph(tt.currentIndent, state)
+
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Parser.paragraph() error = %v, wantErr %v", err, tt.wantErr)
 				return

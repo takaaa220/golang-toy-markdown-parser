@@ -76,7 +76,8 @@ func (p *Parser) Parse(currentIndent int) ([]ast.Node, error) {
 			break
 		}
 
-		node, err := p.block(indent)
+		state := p.newState()
+		node, err := p.block(indent, state)
 		if err != nil {
 			return nil, err
 		}

@@ -75,7 +75,9 @@ func TestParser_orderedList(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			p := NewParser(tt.input)
-			got, err := p.orderedList(tt.currentIndent)
+			state := p.newState()
+
+			got, err := p.orderedList(tt.currentIndent, state)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("Parser.orderedList() error = %v, wantErr %v", err, tt.wantErr)

@@ -48,8 +48,9 @@ func TestParser_heading(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			l := NewParser(tt.input)
-			got, err := l.heading(tt.currentIndent)
+			p := NewParser(tt.input)
+			state := p.newState()
+			got, err := p.heading(tt.currentIndent, state)
 			if err != nil {
 				if !tt.wantErr {
 					t.Errorf("Parser.heading() error = %v, wantErr %v", err, tt.wantErr)
@@ -64,8 +65,8 @@ func TestParser_heading(t *testing.T) {
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Parser.heading() = %v, want %v", got, tt.want)
 			}
-			if l.lineCursor != 0 {
-				t.Errorf("Parser.heading() lineCursor = %v, want %v", l.lineCursor, 0)
+			if p.lineCursor != 0 {
+				t.Errorf("Parser.heading() lineCursor = %v, want %v", p.lineCursor, 0)
 			}
 		})
 	}

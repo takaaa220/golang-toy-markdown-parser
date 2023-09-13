@@ -7,9 +7,7 @@ import (
 	"github.com/takaaa220/golang-toy-markdown-parser/ast"
 )
 
-func (p *Parser) table(currentIndent int) (ast.Node, error) {
-	state := p.newState()
-
+func (p *Parser) table(currentIndent int, state *blockParsedState) (ast.Node, error) {
 	if !p.hasNext() {
 		return ast.Node{}, BlockParseError{Message: "invalid table", State: *state}
 	}
