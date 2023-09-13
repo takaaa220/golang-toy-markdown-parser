@@ -9,6 +9,8 @@ import (
 func (p *Parser) blockquote(currentIndent int) (ast.Node, error) {
 	children := []ast.Node{}
 
+	state := p.newState()
+
 	for {
 		if !p.hasNext() {
 			break
@@ -24,11 +26,11 @@ func (p *Parser) blockquote(currentIndent int) (ast.Node, error) {
 		}
 
 		children = append(children, inlineChildren...)
-		p.next()
+		p.next(state)
 	}
 
 	if len(children) == 0 {
-		return ast.Node{}, ParseError{Message: "invalid blockquote", Line: p.lineCursor, From: 0, To: 0}
+		return ast.Node{}, BlockParseError{Message: "invalid blockquote", State: *state}
 	}
 
 	return ast.BlockQuoteNode(children...), nil

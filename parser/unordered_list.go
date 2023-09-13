@@ -8,6 +8,8 @@ import (
 )
 
 func (p *Parser) unorderedList(currentIndent int) (ast.Node, error) {
+	state := p.newState()
+
 	listItems := []ast.Node{}
 	var usingSymbol rune
 	var beforeListItem *ast.Node
@@ -24,7 +26,7 @@ func (p *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 		}
 		if indent > currentIndent {
 			if beforeListItem == nil {
-				return ast.Node{}, ParseError{Message: "invalid unordered list", Line: p.lineCursor, From: 0, To: 1}
+				return ast.Node{}, BlockParseError{Message: "invalid unordered list", State: *state}
 			}
 
 			children, err := p.Parse(indent)
@@ -56,7 +58,7 @@ func (p *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 		listItem := ast.ListItemNode(listItemChildren...)
 		beforeListItem = &listItem
 
-		p.next()
+		p.next(state)
 	}
 
 	if beforeListItem != nil {
@@ -64,7 +66,7 @@ func (p *Parser) unorderedList(currentIndent int) (ast.Node, error) {
 	}
 
 	if len(listItems) == 0 {
-		return ast.Node{}, ParseError{Message: "invalid unordered list", Line: p.lineCursor, From: 0, To: 1}
+		return ast.Node{}, BlockParseError{Message: "invalid unordered list", State: *state}
 	}
 
 	return ast.UnorderedListNode(listItems...), nil

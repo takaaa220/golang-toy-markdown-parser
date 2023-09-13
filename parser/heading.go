@@ -8,18 +8,20 @@ import (
 )
 
 func (p *Parser) heading(currentIndent int) (ast.Node, error) {
-	line := p.next().getText(currentIndent)
+	state := p.newState()
+
+	line := p.next(state).getText(currentIndent)
 
 	level := 0
 	for line[level] == '#' {
 		level++
 	}
 	if level == 0 || level > 6 {
-		return ast.Node{}, ParseError{Message: "invalid heading", Line: p.lineCursor, From: 0, To: len(line)}
+		return ast.Node{}, BlockParseError{Message: "invalid heading", State: *state}
 	}
 
 	if line[level] != ' ' {
-		return ast.Node{}, ParseError{Message: "invalid heading", Line: p.lineCursor, From: 0, To: len(line)}
+		return ast.Node{}, BlockParseError{Message: "invalid heading", State: *state}
 	}
 
 	children, err := inline(strings.TrimLeft(line[level:], " "))

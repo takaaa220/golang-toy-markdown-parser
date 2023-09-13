@@ -15,6 +15,7 @@ func TestParser_codeblock(t *testing.T) {
 		want          ast.Node
 		wantErr       bool
 		wantCursor    int
+		state         blockParsedState
 	}{
 		{
 			input: strings.Join([]string{
@@ -77,13 +78,30 @@ func TestParser_codeblock(t *testing.T) {
 			),
 			wantCursor: 5,
 		},
+		{
+			input: strings.Join([]string{
+				"hello world",
+			}, "\n"),
+			wantErr: true,
+			state: blockParsedState{
+				lines: []Line{{"hello world"}},
+				from:  0,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			p := NewParser(tt.input)
 			got, err := p.codeblock(tt.currentCursor)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Parser.codeblock() error = %v, wantErr %v", err, tt.wantErr)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("Parser.codeblock() error = %v, wantErr %v", err, tt.wantErr)
+				}
+
+				if !reflect.DeepEqual(tt.state, err.(BlockParseError).State) {
+					t.Errorf("Parser.codeblock() state = %v, want %v", err.(BlockParseError).State, tt.state)
+				}
+
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

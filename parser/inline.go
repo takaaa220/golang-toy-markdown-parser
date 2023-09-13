@@ -127,6 +127,10 @@ func inline(text string) ([]ast.Node, error) {
 		nodes = append(nodes, ast.TextNode(currentText))
 	}
 
+	if len(nodes) == 0 {
+		return []ast.Node{ast.EmptyNode()}, nil
+	}
+
 	return nodes, nil
 }
 

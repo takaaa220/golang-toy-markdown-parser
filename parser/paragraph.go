@@ -3,7 +3,8 @@ package parser
 import "github.com/takaaa220/golang-toy-markdown-parser/ast"
 
 func (p *Parser) paragraph(currentIndent int) (ast.Node, error) {
-	line := p.next().getText(currentIndent)
+	state := p.newState()
+	line := p.next(state).getText(currentIndent)
 
 	if line == "" {
 		return ast.EmptyNode(), nil

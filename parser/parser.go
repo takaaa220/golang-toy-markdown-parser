@@ -33,15 +33,24 @@ func (l Line) getText(indent int) string {
 	return l.text[indent:]
 }
 
-type ParseError struct {
+type BlockParseError struct {
 	Message string
-	Line    int
+	State   blockParsedState
+}
+
+func (e BlockParseError) Error() string {
+	return fmt.Sprintf("[Block]%s at line %d~%d", e.Message, e.State.from, e.State.from+len(e.State.lines)-1)
+}
+
+type InlineParseError struct {
+	Message string
+	Text    string
 	From    int
 	To      int
 }
 
-func (e ParseError) Error() string {
-	return fmt.Sprintf("%s in line %d at %d~%d", e.Message, e.Line, e.From, e.To)
+func (e InlineParseError) Error() string {
+	return fmt.Sprintf(`[Inline] %s in '%s' at %d~%d`, e.Message, e.Text, e.From, e.To)
 }
 
 type Parser struct {
@@ -94,11 +103,31 @@ func (p *Parser) peek() Line {
 	return p.lines[p.lineCursor+1]
 }
 
-func (p *Parser) next() Line {
+func (p *Parser) next(state *blockParsedState) Line {
 	if !p.hasNext() {
 		panic("no next line")
 	}
 
 	p.lineCursor++
-	return p.lines[p.lineCursor]
+
+	line := p.lines[p.lineCursor]
+	state.add(line)
+
+	return line
+}
+
+func (p Parser) newState() *blockParsedState {
+	return &blockParsedState{
+		lines: []Line{},
+		from:  p.lineCursor + 1,
+	}
+}
+
+type blockParsedState struct {
+	lines []Line
+	from  int
+}
+
+func (s *blockParsedState) add(line Line) {
+	s.lines = append(s.lines, line)
 }

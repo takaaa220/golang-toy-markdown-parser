@@ -11,10 +11,12 @@ import (
 func TestParser_blockquote(t *testing.T) {
 	tests := []struct {
 		input         string
+		currentCursor int
 		currentIndent int
 		want          ast.Node
 		wantErr       bool
 		wantCursor    int
+		state         blockParsedState
 	}{
 		{
 			input: `> blockquote1
@@ -62,13 +64,38 @@ hello world,
 			),
 			wantCursor: 1,
 		},
+		{
+			input: strings.Join([]string{
+				"> blockquote1",
+				"> blockquote2",
+				"hello world",
+			}, "\n"),
+			currentCursor: 1,
+			wantErr:       true,
+			wantCursor:    1,
+			state: blockParsedState{
+				lines: []Line{},
+				from:  2,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			p := NewParser(tt.input)
+			if tt.currentCursor != 0 {
+				p.lineCursor = tt.currentCursor
+			}
+
 			got, err := p.blockquote(tt.currentIndent)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Parser.blockquote() error = %v, wantErr %v", err, tt.wantErr)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("Parser.blockquote() error = %v, wantErr %v", err, tt.wantErr)
+				}
+
+				if !reflect.DeepEqual(tt.state, err.(BlockParseError).State) {
+					t.Errorf("Parser.blockquote() state = %v, want %v", err.(BlockParseError).State, tt.state)
+				}
+
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

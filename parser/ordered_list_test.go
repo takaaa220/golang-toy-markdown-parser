@@ -14,6 +14,7 @@ func TestParser_orderedList(t *testing.T) {
 		currentIndent int
 		want          ast.Node
 		wantErr       bool
+		state         blockParsedState
 	}{
 		{
 			input: strings.Join([]string{
@@ -62,13 +63,28 @@ func TestParser_orderedList(t *testing.T) {
 				),
 			),
 		},
+		{
+			input:   strings.Join([]string{"hello world"}, "\n"),
+			wantErr: true,
+			state: blockParsedState{
+				lines: []Line{},
+				from:  0,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			p := NewParser(tt.input)
 			got, err := p.orderedList(tt.currentIndent)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Parser.orderedList() error = %v, wantErr %v", err, tt.wantErr)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("Parser.orderedList() error = %v, wantErr %v", err, tt.wantErr)
+				}
+
+				if !reflect.DeepEqual(tt.state, err.(BlockParseError).State) {
+					t.Errorf("Parser.orderedList() state = %v, want %v", err.(BlockParseError).State, tt.state)
+				}
+
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

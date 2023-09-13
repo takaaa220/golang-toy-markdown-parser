@@ -11,6 +11,8 @@ func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
 	listItems := []ast.Node{}
 	var beforeListItem *ast.Node
 
+	state := p.newState()
+
 	for {
 		if !p.hasNext() {
 			break
@@ -21,9 +23,12 @@ func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
 		if indent < currentIndent {
 			break
 		}
+
+		lineText := line.getText(currentIndent)
+
 		if indent > currentIndent {
 			if beforeListItem == nil {
-				return ast.Node{}, ParseError{Message: "invalid ordered list", Line: p.lineCursor, From: 0, To: 1}
+				return ast.Node{}, BlockParseError{Message: "invalid ordered list", State: *state}
 			}
 
 			children, err := p.Parse(indent)
@@ -41,7 +46,7 @@ func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
 			currentListItemNumber++
 		}
 
-		listText, isListItem := getOrderedListItemText(line.getText(indent), currentListItemNumber)
+		listText, isListItem := getOrderedListItemText(lineText, currentListItemNumber)
 		if !isListItem {
 			break
 		}
@@ -57,7 +62,7 @@ func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
 
 		listItem := ast.ListItemNode(listItemChildren...)
 		beforeListItem = &listItem
-		p.next()
+		p.next(state)
 	}
 
 	if beforeListItem != nil {
@@ -65,7 +70,7 @@ func (p *Parser) orderedList(currentIndent int) (ast.Node, error) {
 	}
 
 	if len(listItems) == 0 {
-		return ast.Node{}, ParseError{Message: "invalid ordered list", Line: p.lineCursor, From: 0, To: 1}
+		return ast.Node{}, BlockParseError{Message: "invalid ordered list", State: *state}
 	}
 
 	return ast.OrderedListNode(listItems...), nil

@@ -13,6 +13,7 @@ func TestParser_heading(t *testing.T) {
 		currentIndent int
 		want          ast.Node
 		wantErr       bool
+		state         blockParsedState
 	}{
 		{
 			input: "# heading",
@@ -39,14 +40,25 @@ func TestParser_heading(t *testing.T) {
 		{
 			input:   "###heading",
 			wantErr: true,
+			state: blockParsedState{
+				lines: []Line{{"###heading"}},
+				from:  0,
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
 			l := NewParser(tt.input)
 			got, err := l.heading(tt.currentIndent)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Parser.heading() error = %v, wantErr %v", err, tt.wantErr)
+			if err != nil {
+				if !tt.wantErr {
+					t.Errorf("Parser.heading() error = %v, wantErr %v", err, tt.wantErr)
+				}
+
+				if !reflect.DeepEqual(tt.state, err.(BlockParseError).State) {
+					t.Errorf("Parser.heading() state = %v, want %v", err.(BlockParseError).State, tt.state)
+				}
+
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
