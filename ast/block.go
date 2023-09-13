@@ -2,6 +2,21 @@ package ast
 
 import "strings"
 
+const (
+	HeadingType       NodeType = "Heading"
+	ParagraphType     NodeType = "Paragraph"
+	OrderedListType   NodeType = "OrderedList"
+	UnorderedListType NodeType = "UnorderedList"
+	ListItemType      NodeType = "ListItem"
+	TableType         NodeType = "Table"
+	TableRowType      NodeType = "TableRow"
+	TableCellType     NodeType = "TableCell"
+	CodeBlockType     NodeType = "CodeBlock"
+	BlockQuoteType    NodeType = "BlockQuote"
+	HeaderType        NodeType = "Header"
+	EmptyType         NodeType = "Empty"
+)
+
 type Heading struct {
 	Node
 	Level int

@@ -1,16 +1,33 @@
 package ast
 
+const (
+	TextType          NodeType = "Text"
+	StrongType        NodeType = "Strong"
+	ItalicType        NodeType = "Italic"
+	StrikeThroughType NodeType = "StrikeThrough"
+	CodeType          NodeType = "Code"
+	ImageType         NodeType = "Image"
+	LinkType          NodeType = "Link"
+	NewLineType       NodeType = "NewLine"
+	EscapeType        NodeType = "Escape"
+)
+
 type Text struct {
 	Node
+	Text string
 }
 
 func NewText(text string) *Text {
 	return &Text{
 		Node: &NodeBase{
 			nodeType: TextType,
-			text:     text,
 		},
+		Text: text,
 	}
+}
+
+func (t Text) Dump() string {
+	return t.Text
 }
 
 type Strong struct {
