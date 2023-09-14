@@ -62,11 +62,13 @@ func NewStrikeThrough(children ...Node) *StrikeThrough {
 
 type Code struct {
 	Node
+	Text string
 }
 
 func NewCode(text string) *Code {
 	return &Code{
-		Node: NewNodeBase(CodeType, NewText(text)),
+		Node: NewNodeBase(CodeType),
+		Text: text,
 	}
 }
 

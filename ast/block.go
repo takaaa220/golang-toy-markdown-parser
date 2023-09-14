@@ -130,14 +130,14 @@ func NewBlockQuote(children ...Node) *BlockQuote {
 type CodeBlock struct {
 	Node
 	Language string
+	Text     string
 }
 
-func NewCodeBlock(line []string, language string) *CodeBlock {
+func NewCodeBlock(lines []string, language string) *CodeBlock {
 	return &CodeBlock{
-		Node: NewNodeBase(CodeBlockType, []Node{
-			NewText(strings.Join(line, "\n")),
-		}...),
+		Node:     NewNodeBase(CodeBlockType),
 		Language: language,
+		Text:     strings.Join(lines, "\n"),
 	}
 }
 
