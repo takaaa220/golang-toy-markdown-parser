@@ -16,8 +16,8 @@ type Renderer interface {
 	OrderedList(node ast.OrderedList) string
 	ListItem(node ast.ListItem) string
 	Table(node ast.Table) string
-	TableRow(node ast.TableRow) string
-	TableCell(node ast.TableCell) string
+	TableRow(node ast.TableRow, columnDefinitions []ast.TableColumnDefinition) string
+	TableCell(node ast.TableCell, columnDefinition ast.TableColumnDefinition) string
 	Empty(node ast.Empty) string
 	Strong(node ast.Strong) string
 	Italic(node ast.Italic) string
@@ -63,15 +63,45 @@ func (r DefaultRenderer) ListItem(li ast.ListItem) string {
 }
 
 func (r DefaultRenderer) Table(t ast.Table) string {
-	return "<table>" + Render(t.Children(), r) + "</table>"
+	return "<table>" + r.tableChildren(t.Children(), t.ColumnDefinitions) + "</table>"
 }
 
-func (r DefaultRenderer) TableRow(tr ast.TableRow) string {
-	return "<tr>" + Render(tr.Children(), r) + "</tr>"
+func (r DefaultRenderer) tableChildren(node []ast.Node, columnDefinitions []ast.TableColumnDefinition) string {
+	result := ""
+
+	for _, n := range node {
+		switch n := n.(type) {
+		case *ast.TableRow:
+			result += r.TableRow(*n, columnDefinitions)
+		default:
+			return Render(node, r)
+		}
+	}
+
+	return result
 }
 
-func (r DefaultRenderer) TableCell(tc ast.TableCell) string {
-	return "<td>" + Render(tc.Children(), r) + "</td>"
+func (r DefaultRenderer) TableRow(tr ast.TableRow, columnDefinitions []ast.TableColumnDefinition) string {
+	return "<tr>" + r.tableRowChildren(tr.Children(), columnDefinitions) + "</tr>"
+}
+
+func (r DefaultRenderer) tableRowChildren(node []ast.Node, columnDefinitions []ast.TableColumnDefinition) string {
+	result := ""
+
+	for i, n := range node {
+		switch n := n.(type) {
+		case *ast.TableCell:
+			result += r.TableCell(*n, columnDefinitions[i])
+		default:
+			return Render(node, r)
+		}
+	}
+
+	return result
+}
+
+func (r DefaultRenderer) TableCell(tc ast.TableCell, columnDefinition ast.TableColumnDefinition) string {
+	return fmt.Sprintf("<td align=\"%s\">%s</td>", columnDefinition.Align, Render(tc.Children(), r))
 }
 
 func (r DefaultRenderer) Empty(e ast.Empty) string {
@@ -140,10 +170,6 @@ func render(node ast.Node, r Renderer) string {
 		return r.ListItem(*node)
 	case *ast.Table:
 		return r.Table(*node)
-	case *ast.TableRow:
-		return r.TableRow(*node)
-	case *ast.TableCell:
-		return r.TableCell(*node)
 	case *ast.Empty:
 		return r.Empty(*node)
 	case *ast.Strong:

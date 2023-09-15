@@ -72,9 +72,9 @@ func NewListItem(children ...Node) *ListItem {
 type TableColumnAlign string
 
 const (
-	TableColumnAlignLeft   TableColumnAlign = "Left"
-	TableColumnAlignCenter TableColumnAlign = "Center"
-	TableColumnAlignRight  TableColumnAlign = "Right"
+	TableColumnAlignLeft   TableColumnAlign = "left"
+	TableColumnAlignCenter TableColumnAlign = "center"
+	TableColumnAlignRight  TableColumnAlign = "right"
 )
 
 type TableColumnDefinition struct {
@@ -87,13 +87,13 @@ type TableAttribute struct {
 
 type Table struct {
 	Node
-	Columns []TableColumnDefinition
+	ColumnDefinitions []TableColumnDefinition
 }
 
 func NewTable(columnDefinitions []TableColumnDefinition, children ...Node) *Table {
 	return &Table{
-		Node:    NewNodeBase(TableType, children...),
-		Columns: columnDefinitions,
+		Node:              NewNodeBase(TableType, children...),
+		ColumnDefinitions: columnDefinitions,
 	}
 }
 
