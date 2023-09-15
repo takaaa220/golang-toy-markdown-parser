@@ -127,5 +127,5 @@ func convertToRow(cellTexts []string, columnLength int) (ast.Node, error) {
 }
 
 func isTable(line string) bool {
-	return line[0] == '|'
+	return strings.HasPrefix(line, "|")
 }

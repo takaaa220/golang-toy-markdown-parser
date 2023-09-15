@@ -148,10 +148,10 @@ func TestRender(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		r := NewRenderer()
+		r := NewDefaultRenderer()
 
 		t.Run(tt.name, func(t *testing.T) {
-			if got := r.Render(tt.nodes); got != tt.want {
+			if got := Render(tt.nodes, r); got != tt.want {
 				t.Errorf("Render() = \n%v, \nwant \n%v", got, tt.want)
 			}
 		})

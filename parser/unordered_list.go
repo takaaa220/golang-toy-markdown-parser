@@ -90,5 +90,12 @@ func getUnorderedListItemText(line string, usingSymbol rune) (string, rune, bool
 }
 
 func isUnorderedList(line string) bool {
-	return line[0] == '-' || line[0] == '*' || line[0] == '+'
+	availableSymbols := []rune{'-', '*', '+'}
+	for _, symbol := range availableSymbols {
+		if strings.HasPrefix(line, fmt.Sprintf("%c ", symbol)) {
+			return true
+		}
+	}
+
+	return false
 }
